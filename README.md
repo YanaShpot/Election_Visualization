@@ -12,4 +12,5 @@ The idea is not to invent a bicycle, but to take some good ideas, add time, and 
 5) Make visualisation interactive
 6) Make the project look more appealing 
 ## Get things done
-Till 25.08 I plan to end up at the fourth stage (static visualization)
+Till 05.08 I plan to end up this project.
+Currently makink static visualization.
