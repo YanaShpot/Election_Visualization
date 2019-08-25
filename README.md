@@ -13,4 +13,4 @@ The idea is not to invent a bicycle, but to take some good ideas, add time, and 
 6) Make the project look more appealing 
 ## Get things done
 Till 05.08 I plan to end up this project.
-Currently makink static visualization.
+Currently making static visualization.
