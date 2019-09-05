@@ -1,6 +1,6 @@
-# Parliament_Visualization
-This is a repository for web visualization project about ukrainian elections.
-The project will be made using d3.js library and JavaScript only.
+# Parliament Visualization
+This is a repository for web visualization project about ukrainian parliamen convocations.
+The project will be made using D3 library.
 ## Idea
 I'd like to make a remake on Andriy Gasin's visualizations. [Here is the link](https://github.com/andriy-gazin/mps)
 The idea is not to invent a bicycle, but to take some good ideas, add time, and make those static visualizations move in a pretty way :)
