@@ -1,4 +1,4 @@
-# Election_Visualization
+# Parliament_Visualization
 This is a repository for web visualization project about ukrainian elections.
 The project will be made using d3.js library and JavaScript only.
 ## Idea
