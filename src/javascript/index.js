@@ -4,6 +4,15 @@ let numCols = 10;
 let rectW = 4;
 let rectH = 2;
 let spaceBetweenRect = 0.5;
+let spaceBetweenCols = 55;
+
+const years = ['1990-1994', '1994-1998',
+    '1998-2002', '2002-2006',
+    '2006-2007', '2007-2012',
+    '2012-2014', '2014-2019', '2019'];
+
+const colors = ['#a6bddb', '#eda9d0','#e48dbb','#d971a6',
+    '#cb5692','#bb3a7d','#a71d68','#8e0152']
 
 let margin = {
     right: 40,
@@ -11,13 +20,6 @@ let margin = {
     top: 70,
     bottom: 40
 };
-
-let svgContainer = d3.select(".chart")
-    .append("g")
-    .attr("transform", "translate(0" + margin.left + "," + margin.top + ")");
-
-let div = d3.select(".tooltip")
-    .style("opacity", 0);
 
 
 let d = d3.csv('./data/merged_data_rows_excluded.csv').then(function(data) {
@@ -55,78 +57,9 @@ let d = d3.csv('./data/merged_data_rows_excluded.csv').then(function(data) {
         .entries(data);
     console.log(convocations);
 
-    svgContainer.append("text")
-        .attr("x", 0)
-        .attr("y", -30)
-        .text("1990 - 1994")
-        .style("text-decoration", "underline")
-        .style("font-size", 10)
-        .style("font-family", "Ubuntu Condensed");
-
-    svgContainer.append("text")
-        .attr("x", 110)
-        .attr("y", -30)
-        .text("1994 - 1998")
-        .style("text-decoration", "underline")
-        .style("font-size", 10)
-        .style("font-family", "Ubuntu Condensed");
-
-    svgContainer.append("text")
-        .attr("x", 220)
-        .attr("y", -30)
-        .text("1998 - 2002")
-        .style("text-decoration", "underline")
-        .style("font-size", 10)
-        .style("font-family", "Ubuntu Condensed");
-
-    svgContainer.append("text")
-        .attr("x", 330)
-        .attr("y", -30)
-        .text("2002 - 2006")
-        .style("text-decoration", "underline")
-        .style("font-size", 10)
-        .style("font-family", "Ubuntu Condensed");
-
-    svgContainer.append("text")
-        .attr("x", 440)
-        .attr("y", -30)
-        .text("2006 - 2007")
-        .style("text-decoration", "underline")
-        .style("font-size", 10)
-        .style("font-family", "Ubuntu Condensed");
-
-
-    svgContainer.append("text")
-        .attr("x", 550)
-        .attr("y", -30)
-        .text("2007 - 2012")
-        .style("text-decoration", "underline")
-        .style("font-size", 10)
-        .style("font-family", "Ubuntu Condensed");
-
-    svgContainer.append("text")
-        .attr("x", 660)
-        .attr("y", -30)
-        .text("2012 - 2014")
-        .style("text-decoration", "underline")
-        .style("font-size", 10)
-        .style("font-family", "Ubuntu Condensed");
-
-    svgContainer.append("text")
-        .attr("x", 770)
-        .attr("y", -30)
-        .text("2014 - 2019")
-        .style("text-decoration", "underline")
-        .style("font-size", 10)
-        .style("font-family", "Ubuntu Condensed");
-
-    svgContainer.append("text")
-        .attr("x", 880)
-        .attr("y", -30)
-        .text("2019")
-        .style("text-decoration", "underline")
-        .style("font-size", 10)
-        .style("font-family", "Ubuntu Condensed");
+    let svgContainer = d3.select(".chart")
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
     let plots = svgContainer.selectAll("g")
@@ -134,10 +67,19 @@ let d = d3.csv('./data/merged_data_rows_excluded.csv').then(function(data) {
         .enter()
         .append("g")
         .attr("transform", function(d){
-            let xCoordinate = (d.key - 1) * 110;
-            console.log(xCoordinate);
-            return "translate(" + xCoordinate + ")"
+            let xCoordinate = (d.key - 1) *spaceBetweenCols;
+            return "translate(" + xCoordinate +")";});
 
+
+    let title = plots.append('g')
+        .style("text-anchor", "middle")
+        .style("font-family", "Ubuntu Condensed")
+        .attr("transform", "translate("+(numCols*(rectW+spaceBetweenRect) - spaceBetweenRect)/2+")");
+
+    title.append("text")
+        .attr("class", "block_title")
+        .text(function(d) {
+            return years[d.key - 1];
         });
 
     plots.selectAll(".rect")
@@ -146,19 +88,25 @@ let d = d3.csv('./data/merged_data_rows_excluded.csv').then(function(data) {
         })
         .enter()
         .append("rect")
-        .attr("transform", "translate(0,120) scale(1,-1)")
+        .attr("transform", "translate(0,150) scale(1,-1)")
         .attr("width", rectW)
         .attr("height", rectH)
         .attr("x", function(d, i){
             let colIndex = i % numCols;
             return colIndex * (rectW + spaceBetweenRect)
         })
-        .attr("y", function(d, i){
+        .attr("y", function(d,i){
             let rowIndex = Math.floor(i/numCols);
             return rowIndex * (rectH + spaceBetweenRect)
         })
-        .attr("r", 4)
-        .style("fill", '#a6bddb')
+        .style("fill", function(d) {
+            //data.forEach(function(d){
+                let color =  colors[d.counter - 1];
+                console.log(color);
+                return color;
+
+            //})
+        })
         .style("stroke", "none")
         .on("mouseover", function(d){
             div.transition()
@@ -170,15 +118,23 @@ let d = d3.csv('./data/merged_data_rows_excluded.csv').then(function(data) {
                 .style("font-family", "Ubuntu Condensed");
             div.style("visibility", "visible")
         })
-        .on("mousemove", function(d){
+        .on("mousemove", function(){
             div.style("left", (d3.event.pageX - rectW/2) + "px")
                 .style("top", (d3.event.pageY - 25 - rectH) + "px")
         })
-        .on("mouseout", function(d){
+        .on("mouseout", function(){
             div.transition()
                 .duration(500);
             div.style("visibility", "hidden");
             let element = d3.select(this);
-            element.style("fill", "#a6bddb")
-        })
+            element.style("fill", function(d) {
+
+                let color = colors[d.counter - 1];
+                console.log(color);
+                return color;
+            });
+        });
+
+    let div = d3.select(".tooltip")
+        .style("opacity", 0);
 });

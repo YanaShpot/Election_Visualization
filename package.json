@@ -28,7 +28,6 @@
   "dependencies": {
     "brfs": "^2.0.2",
     "d3": "^5.11.0",
-    "d3-relationshipgraph": "^3.0.3",
     "fast-csv": "^3.4.0"
   },
   "description": ""
