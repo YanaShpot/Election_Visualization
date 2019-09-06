@@ -1,20 +1,7 @@
 const fs = require('fs');
 const csv = require('fast-csv');
 
-/*const csv1 = "./data/data/mps01-data.csv",
-    csv2 = "./data/data/mps02-data.csv",
-    csv3 = "./data/data/mps03-data.csv",
-    csv4 = "./data/data/mps04-data.csv",
-    csv5 = "./data/data/mps05-data.csv",
-    csv6 = "./data/data/mps06-data.csv",
-    csv7 = "./data/data/mps07-data.csv",
-    csv8 = "./data/data/mps08-data.csv",
-    csv9 = "./data/data/mps09-data.csv";*/
-
-//const importantHeaders = ['id', 'convocation', 'gender', 'birthday', 'last_name', 'first_name'];
-
-const directoryPath = './data/data';
-
+const directoryPath = './data';
 
 let changeSurname = (data) => {
     switch(data.last_name + data.first_name) {

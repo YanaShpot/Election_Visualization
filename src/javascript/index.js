@@ -12,13 +12,11 @@ let margin = {
     bottom: 40
 };
 
-let svgContainer = d3.select("#chart")
+let svgContainer = d3.select(".chart")
     .append("g")
     .attr("transform", "translate(0" + margin.left + "," + margin.top + ")");
 
-let div = d3.select("body")
-    .append("div")
-    .attr("class", "tooltip")
+let div = d3.select(".tooltip")
     .style("opacity", 0);
 
 
@@ -42,17 +40,20 @@ let d = d3.csv('./data/merged_data_rows_excluded.csv').then(function(data) {
             data[i].counter = 1;
         }
     }
-    console.log(data);
 
-    let convocationKey = d3.nest()
+    let convocationsCountsNested = d3.nest()
         .key(function(d){ return d.convocation })
-        .entries(data);
-    console.log(convocationKey);
-
-    let counterKey = d3.nest()
         .key(function(d){ return d.counter })
         .entries(data);
-    console.log(counterKey);
+    console.log(convocationsCountsNested);
+
+    let  convocations = d3.nest()
+        .key(function(d){ return d.convocation })
+        .sortValues(function(x,y) {
+            return d3.descending(x.counter,y.counter)
+        })
+        .entries(data);
+    console.log(convocations);
 
     svgContainer.append("text")
         .attr("x", 0)
@@ -77,7 +78,6 @@ let d = d3.csv('./data/merged_data_rows_excluded.csv').then(function(data) {
         .style("text-decoration", "underline")
         .style("font-size", 10)
         .style("font-family", "Ubuntu Condensed");
-
 
     svgContainer.append("text")
         .attr("x", 330)
@@ -128,37 +128,22 @@ let d = d3.csv('./data/merged_data_rows_excluded.csv').then(function(data) {
         .style("font-size", 10)
         .style("font-family", "Ubuntu Condensed");
 
+
     let plots = svgContainer.selectAll("g")
-        .data(convocationKey)
+        .data(convocations)
         .enter()
         .append("g")
         .attr("transform", function(d){
-            switch(d.key) {
-                case "1":
-                    return "translate(0)";
-                case "2":
-                    return "translate(110)";
-                case "3":
-                    return "translate(220)";
-                case "4":
-                    return "translate(330)";
-                case "5":
-                    return "translate(440)";
-                case "6":
-                    return "translate(550)";
-                case "7":
-                    return "translate(660)";
-                case "8":
-                    return "translate(770)";
-                case "9":
-                    return "translate(880)";
-            }
+            let xCoordinate = (d.key - 1) * 110;
+            console.log(xCoordinate);
+            return "translate(" + xCoordinate + ")"
 
         });
 
-
     plots.selectAll(".rect")
-        .data(function(d){ return d.values})
+        .data(function(d){
+            return d.values; //.filter(d.counter === "1");
+        })
         .enter()
         .append("rect")
         .attr("transform", "translate(0,120) scale(1,-1)")
@@ -180,16 +165,14 @@ let d = d3.csv('./data/merged_data_rows_excluded.csv').then(function(data) {
                 .duration(100)
                 .style("opacity", 1);
             let element = d3.select(this);
-            element.style("fill", "Black");
+            element.style("fill", "rgba(0,0,0,0.1)");
             div.html("<span style = 'font-weight: bold'>" + d.first_name +" " + d.last_name + "</span>" + "<br>" + "<span style = 'font-style: italic'>" + "Кількість скликань: "+ d.counter + "</span>")
                 .style("font-family", "Ubuntu Condensed");
             div.style("visibility", "visible")
-                .style("left", (d3.event.pageX - 20) + "px")
-                .style("top", (d3.event.pageY - 35) + "px")
         })
         .on("mousemove", function(d){
-            div.style("left", (d3.event.pageX - 20) + "px")
-                .style("top", (d3.event.pageY - 70) + "px")
+            div.style("left", (d3.event.pageX - rectW/2) + "px")
+                .style("top", (d3.event.pageY - 25 - rectH) + "px")
         })
         .on("mouseout", function(d){
             div.transition()
@@ -199,4 +182,3 @@ let d = d3.csv('./data/merged_data_rows_excluded.csv').then(function(data) {
             element.style("fill", "#a6bddb")
         })
 });
-
