@@ -6,6 +6,16 @@
     <title>My Waffle Chart</title>
     <style type="text/css">
 
+        .main_title {
+            text-align: left;
+            font: 15px ultra-condensed;
+            color: #5D646F;
+        }
+        .main_subtitle {
+            text-align: left;
+            font: 10px ultra-condensed;
+            color: #5D646F;
+        }
         .tooltip {
             position: absolute;
             text-align: left;
@@ -19,15 +29,22 @@
             opacity: 0.5;
         }
         .block_title {
-        text-decoration: underline;
-        font-size: 10px;
+            font-size: 10px;
+            color: #5D646F;
+        }
+        .percent_subtitle {
+            font-size: 13px;
+            color: #5D646F;
+
+
         }
 
     </style>
 </head>
 <body>
-
 <div class="container">
+    <h1 class="main_title"></h1>
+    <h2 class="main_subtitle"></h2>
     <svg class="chart"
          viewBox="0 0 1000 850"
          preserveAspectRatio="xMinYMid">
@@ -36,6 +53,11 @@
     </div>
     <div class="block_title">
     </div>
+    <div class="percent_subtitle">
+    </div>
+
+
+
 </div>
 </body>
 </html>

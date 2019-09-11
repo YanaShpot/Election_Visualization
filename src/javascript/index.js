@@ -21,8 +21,8 @@ let margin = {
     bottom: 40
 };
 
-
 let d = d3.csv('./data/merged_data_rows_excluded.csv').then(function(data) {
+    //Add counter columnn
     data[0].counter = 1;
     outer: for (let i = 1; i < data.length; i++) {
         if (data[i].convocation === 1){
@@ -43,26 +43,68 @@ let d = d3.csv('./data/merged_data_rows_excluded.csv').then(function(data) {
         }
     }
 
-    let convocationsCountsNested = d3.nest()
+    //Count number of first year deputies, and repetitive deputies
+    let convCounts = d3.nest()
         .key(function(d){ return d.convocation })
-        .key(function(d){ return d.counter })
-        .entries(data);
-    console.log(convocationsCountsNested);
+        .key(function(d){{
+            if (d.counter === 1) {
+                return d.counter
+            }
+        }
+        })
+        .rollup(function(d) {
+            return d.length; })
+        .object(data);
+
+    for(let d in convCounts) {
+        if (d === "1"){
+            convCounts[d]["other"] = 0;
+            continue;
+        }
+        convCounts[d]["other"] = convCounts[d][undefined];
+        delete convCounts[d][undefined];
+        }
+    //console.log(convCounts);
+
+    //Count percentage
+    let percentage = [];
+    for(let d in convCounts){
+        let percent = Math.round(100 * convCounts[d][1]/(convCounts[d][1] + convCounts[d]["other"]));
+
+        percentage.push(percent);
+    }
+    //console.log(percentage);
 
     let  convocations = d3.nest()
         .key(function(d){ return d.convocation })
         .sortValues(function(x,y) {
-            return d3.descending(x.counter,y.counter)
+            return d3.ascending(x.counter,y.counter)
         })
         .entries(data);
-    console.log(convocations);
+    //console.log(convocations);
 
     let svgContainer = d3.select(".chart")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+   /* let main_title = svgContainer
+        .append('g')
+        .style("text-anchor", "middle")
+        .style("font-family", "Ubuntu Condensed");
 
-    let plots = svgContainer.selectAll("g")
+    main_title.append("text")
+        .attr("class", "main_title")
+        .text("Як оновлювався склад верховної ради");
+
+
+    main_title.append("text")
+        .attr("class", "main_subtitle")
+        .text("Кожен прямокутник на графіку ‒ це один депутат або депутатка у Верховній Раді.\n" +
+            "        Кількість людей у скликаннях не однакова (і може бути більшою за 450),\n" +
+            "        оскільки тут враховані всі, хто був депутатом чи депутаткою протягом певного скликання");
+
+*/
+    let plot = svgContainer.selectAll("g")
         .data(convocations)
         .enter()
         .append("g")
@@ -70,42 +112,81 @@ let d = d3.csv('./data/merged_data_rows_excluded.csv').then(function(data) {
             let xCoordinate = (d.key - 1) *spaceBetweenCols;
             return "translate(" + xCoordinate +")";});
 
-
-    let title = plots.append('g')
+    let block_title = plot.append('g')
         .style("text-anchor", "middle")
         .style("font-family", "Ubuntu Condensed")
         .attr("transform", "translate("+(numCols*(rectW+spaceBetweenRect) - spaceBetweenRect)/2+")");
 
-    title.append("text")
+    block_title.append("text")
         .attr("class", "block_title")
         .text(function(d) {
             return years[d.key - 1];
         });
+    block_title.append("line")
+        .attr("stroke-width",1)
+        .attr("stroke","#5D646F")
+        .attr("x1",Math.ceil(-((rectW + spaceBetweenRect) * numCols - spaceBetweenRect)/2) )
+        .attr("x2",Math.ceil(((rectW + spaceBetweenRect) * numCols - spaceBetweenRect)/2) )
+        .attr("transform", "translate(0,2.5)");
 
-    plots.selectAll(".rect")
+
+
+    block_title.append("text")
+        .attr("class", "percent_subtitle")
+        .attr("y", 14)
+        .text(function(d) {
+            return percentage[d.key - 1] + '%';
+        });
+
+    plot.selectAll(".rect")
         .data(function(d){
-            return d.values; //.filter(d.counter === "1");
+            return d.values;
         })
         .enter()
         .append("rect")
-        .attr("transform", "translate(0,150) scale(1,-1)")
+        .attr("transform", function (d){
+            if (d.counter === 1) {
+                return "translate(0,150) scale(1,-1)";
+            }
+            else {
+                return "translate(0,150)";
+            }
+
+        } )
         .attr("width", rectW)
         .attr("height", rectH)
         .attr("x", function(d, i){
-            let colIndex = i % numCols;
-            return colIndex * (rectW + spaceBetweenRect)
+
+            if (d.counter === 1) {
+                let colIndex = i % numCols;
+                return colIndex * (rectW + spaceBetweenRect)
+            }
+            else {
+                let dif =  convCounts[d.convocation][1]%numCols;
+                //console.log(dif);
+
+                let colIndex = (i - dif) % numCols;
+                return (colIndex) * (rectW + spaceBetweenRect)
+            }
         })
         .attr("y", function(d,i){
-            let rowIndex = Math.floor(i/numCols);
-            return rowIndex * (rectH + spaceBetweenRect)
+            if (d.counter === 1) {
+
+                let rowIndex = Math.floor(i/numCols);
+                return rowIndex * (rectH + spaceBetweenRect)
+            }
+            else {
+                let dif =  convCounts[d.convocation][1]%numCols;
+                let rowIndex = Math.floor((i - dif)/numCols);
+                let firstBlockRows = Math.floor((convCounts[d.convocation][1])/numCols);
+                return (rowIndex - firstBlockRows)* (rectH + spaceBetweenRect) + spaceBetweenRect;
+            }
+
         })
         .style("fill", function(d) {
-            //data.forEach(function(d){
                 let color =  colors[d.counter - 1];
-                console.log(color);
+                //console.log(color);
                 return color;
-
-            //})
         })
         .style("stroke", "none")
         .on("mouseover", function(d){
@@ -130,7 +211,7 @@ let d = d3.csv('./data/merged_data_rows_excluded.csv').then(function(data) {
             element.style("fill", function(d) {
 
                 let color = colors[d.counter - 1];
-                console.log(color);
+                //console.log(color);
                 return color;
             });
         });

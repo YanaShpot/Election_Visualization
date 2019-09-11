@@ -1,7 +1,7 @@
 const fs = require('fs');
 const csv = require('fast-csv');
 
-const directoryPath = './data';
+const directoryPath = './data/data/';
 
 let changeSurname = (data) => {
     switch(data.last_name + data.first_name) {
@@ -26,19 +26,19 @@ let changeSurname = (data) => {
         case 'Джемілев' + 'Мустафа':
             return  'Джемілєв';
 
-        case 'Чмир' + data.first_name === 'Юрій':
+        case 'Чмир' +  'Юрій':
             return  'Чмирь';
 
-        case 'Грачов' + data.first_name === 'Олег':
+        case 'Грачов' + 'Олег':
             return  'Грачев';
 
-        case 'Веретенніков' + data.first_name === 'Віктор':
+        case 'Веретенніков' +  'Віктор':
             return  'Веретенников';
 
-        case 'Кожевников' + data.first_name === 'Борис':
+        case 'Кожевников' +  'Борис':
             return  'Кожевніков';
 
-        case 'Коломойцев' + data.first_name === 'Валерій':
+        case 'Коломойцев' + 'Валерій':
             return 'Коломойцев-Рибалка';
 
         default:
@@ -47,6 +47,10 @@ let changeSurname = (data) => {
 
 };
 
+let getBirthYear = (data) => {
+    return data.birthday.slice(-4);
+
+};
 
 function concatCSVAndOutput(csvDataPaths, outputFilePath) {
     const promises = csvDataPaths.map((path) => {
@@ -58,6 +62,7 @@ function concatCSVAndOutput(csvDataPaths, outputFilePath) {
                     id: data.id,
                     convocation: data.convocation,
                     gender: data.gender,
+                    //birthday: data.birthday = getBirthYear(data),
                     birthday: data.birthday,
                     last_name: data.last_name = changeSurname(data),
                     first_name: data.first_name
