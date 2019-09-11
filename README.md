@@ -10,7 +10,4 @@ The idea is not to invent a bicycle, but to take some good ideas, add time, and 
 3) Getting started with d3.js (DOM manipulations, scales, D3 layouts...)
 4) Make a static visualization
 5) Make visualisation interactive
-6) Make the project look more appealing 
-## Get things done
-Till 05.08 I plan to end up this project.
-Currently making static visualization.
+6) Make the project look more appealing
