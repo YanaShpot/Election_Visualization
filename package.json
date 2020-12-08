@@ -28,7 +28,7 @@
   "dependencies": {
     "brfs": "^2.0.2",
     "d3": "^5.11.0",
-    "fast-csv": "^3.4.0"
+    "fast-csv": "^4.3.6"
   },
   "description": ""
 }
